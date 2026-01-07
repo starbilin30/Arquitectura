@@ -211,7 +211,224 @@
 
 <script>
 /* --------- Datos de la malla (5 años completos) --------- */
-const mallaData = [
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular Arquitectura ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root {
+            --verde-fondo: #f4f7f0;
+            --verde-fuente: #4c662b;
+            --verde-primario: #a3c585;
+            --verde-oscuro: #6b8e23;
+            --blanco: #ffffff;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--verde-fondo);
+            margin: 0;
+            color: var(--verde-fuente);
+            background-image: radial-gradient(#dce6d1 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+        }
+
+        #loginScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--verde-fondo);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+
+        .login-card {
+            background: var(--blanco);
+            padding: 50px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(107, 142, 35, 0.1);
+            text-align: center;
+            width: 320px;
+            border: 1px solid rgba(163, 197, 133, 0.3);
+        }
+
+        .login-card h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: var(--verde-oscuro);
+            margin-bottom: 30px;
+        }
+
+        #mainContent { 
+            display: none; 
+            padding: 20px; 
+            text-align: center; 
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .titulo-malla {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            margin: 40px 0 10px;
+            color: var(--verde-oscuro);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .progreso-container { margin: 20px auto 40px; max-width: 800px; }
+        .barra-bg {
+            width: 100%; height: 16px; background-color: #e2ecd7;
+            border-radius: 50px; overflow: hidden; margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .barra-fill { 
+            height: 100%; background: linear-gradient(90deg, var(--verde-primario), #b8d59a); 
+            width: 0%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .frase-motivadora {
+            font-style: italic; font-weight: 300; margin-bottom: 20px;
+            color: #88a070; min-height: 1.2em;
+        }
+
+        .malla-scroll { 
+            display: flex; gap: 30px; overflow-x: auto; padding: 30px; 
+            scrollbar-width: none; position: relative; z-index: 10;
+        }
+        
+        .anio-card { 
+            min-width: 300px; background: rgba(255, 255, 255, 0.6); 
+            border-radius: 35px; padding: 25px; 
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+        }
+        
+        .anio-titulo { 
+            font-size: 1.8rem; font-weight: 700; color: var(--verde-oscuro);
+            border-bottom: 2px solid #dce6d1; padding-bottom: 10px; margin-bottom: 20px;
+        }
+
+        .semestre-label { 
+            background: #f0f4eb; padding: 10px; border-radius: 15px; 
+            font-size: 0.9rem; font-weight: 700; margin: 20px 0 10px;
+        }
+
+        .materia {
+            background: var(--blanco); padding: 14px; margin: 10px 0; border-radius: 18px;
+            font-size: 0.85rem; cursor: pointer; position: relative; transition: 0.3s;
+        }
+
+        .materia.aprobada { 
+            background-color: #6b8e23 !important;
+            color: white !important;
+            text-decoration: line-through;
+            transform: scale(0.98);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .materia.bloqueada {
+            background-color: #e8e8e8;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .materia:not(.bloqueada):hover {
+            border: 2px solid var(--verde-primario);
+            transform: translateY(-2px);
+        }
+
+        .materia::after {
+            content: attr(data-tooltip);
+            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+            background: rgba(76, 102, 43, 0.9); color: white; padding: 10px 15px; border-radius: 15px;
+            font-size: 0.75rem; width: 180px; z-index: 100; opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .materia:hover::after { opacity: 1; visibility: visible; }
+
+        .controles-flotantes {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 15px; z-index: 3000;
+            pointer-events: none;
+        }
+
+        .btn-float {
+            width: 60px; height: 60px; border-radius: 50%; border: none;
+            background: var(--verde-primario); color: white; font-size: 1.5rem;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+            pointer-events: auto;
+        }
+        .btn-float:hover { transform: scale(1.1) rotate(5deg); background: var(--verde-oscuro); }
+        
+        .btn-google { 
+            background: white; border: 1px solid #eee; padding: 14px; border-radius: 50px; 
+            width: 100%; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen">
+        <div class="login-card">
+            <h1>Bienvenida ✨</h1>
+            <p style="color: #88a070; margin-bottom: 20px;">Tu futuro diseño comienza aquí</p>
+            <button id="googleBtn" class="btn-google">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18"> Entrar con Google
+            </button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <h1 class="titulo-malla">Malla Curricular Arquitectura</h1>
+        
+        <div class="progreso-container">
+            <p id="txtProgreso" style="font-weight: 700; margin-bottom: 5px;">Avance: 0%</p>
+            <div class="barra-bg"><div id="fillProgreso" class="barra-fill"></div></div>
+            <p id="fraseMotivadora" class="frase-motivadora"></p>
+            <button id="reiniciarBtn" style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 0.7rem; text-decoration: underline;">Reiniciar mi progreso</button>
+        </div>
+
+        <div class="malla-scroll" id="mallaGrid"></div>
+
+        <div class="controles-flotantes">
+            <button id="pdfBtn" class="btn-float" data-label="Descargar PDF">📄</button>
+            <button id="logoutBtn" class="btn-float" data-label="Cerrar Sesión" style="background:#d1d9c7; color:#4c662b; font-size: 1.1rem;">✕</button>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwu2ccI0usOv4c4SmYAKrOMSLZYGh6Mew",
+        authDomain: "malla-curricular-de-arq.firebaseapp.com",
+        projectId: "malla-curricular-de-arq",
+        storageBucket: "malla-curricular-de-arq.firebasestorage.app",
+        messagingSenderId: "922660318162",
+        appId: "1:922660318162:web:d03fc6ae04a91792e2f60b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let usuarioActual = null;
+    let aprobadas = {};
+
+    const mallaData = [
   /* ---------- PRIMER AÑO ---------- */
   {
     anio: "AÑO 1",
@@ -395,6 +612,140 @@ const mallaData = [
     ]
   }
 ];
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            usuarioActual = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
+                aprobadas = snap.exists() ? snap.data().materias : {};
+                renderMalla();
+            });
+        } else {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+    });
+
+    function actualizarFrase(porcentaje) {
+        const frases = [
+            { p: 0, t: "Todo gran proyecto empieza con una idea 🌱" },
+            { p: 10, t: "¡Buen comienzo! Tus primeros trazos están listos ✨" },
+            { p: 50, t: "¡Mitad de carrera! Ya eres casi una experta 🏛️" },
+            { p: 100, t: "¡Felicidades, Arquitecta! El mundo es tu lienzo 🎓" }
+        ];
+        const fraseActual = [...frases].reverse().find(f => porcentaje >= f.p);
+        document.getElementById('fraseMotivadora').textContent = fraseActual.t;
+    }
+
+    function renderMalla() {
+        const grid = document.getElementById('mallaGrid');
+        grid.innerHTML = '';
+        let total = 0, numAp = 0;
+
+        mallaData.forEach(anio => {
+            const card = document.createElement('div');
+            card.className = 'anio-card';
+            
+            const title = document.createElement('div');
+            title.className = 'anio-titulo';
+            title.textContent = anio.anio;
+            card.appendChild(title);
+            
+            anio.semestres.forEach(sem => {
+                const semLabel = document.createElement('div');
+                semLabel.className = 'semestre-label';
+                semLabel.textContent = sem.nombre;
+                card.appendChild(semLabel);
+
+                sem.materias.forEach(m => {
+                    total++;
+                    const esAprobada = aprobadas[m.nombre];
+                    if(esAprobada) numAp++;
+                    
+                    const bloqueada = !m.prereq.every(p => aprobadas[p]);
+
+                    const mDiv = document.createElement('div');
+                    mDiv.className = `materia ${esAprobada ? 'aprobada' : ''} ${bloqueada && !esAprobada ? 'bloqueada' : ''}`;
+                    mDiv.textContent = m.nombre;
+
+                    if (bloqueada && !esAprobada) {
+                        const faltan = m.prereq.filter(p => !aprobadas[p]);
+                        mDiv.setAttribute('data-tooltip', `🔒 Faltan: ${faltan.join(", ")}`);
+                    } else if (esAprobada) {
+                        mDiv.setAttribute('data-tooltip', `✅ Completada`);
+                    } else {
+                        mDiv.setAttribute('data-tooltip', `🔓 Lista para cursar`);
+                    }
+
+                    mDiv.addEventListener('click', () => {
+                        if (!bloqueada || esAprobada) {
+                            toggleMateria(m.nombre);
+                        } else {
+                            mDiv.style.boxShadow = "0 0 15px rgba(255,0,0,0.3)";
+                            setTimeout(() => mDiv.style.boxShadow = "", 300);
+                        }
+                    });
+
+                    card.appendChild(mDiv);
+                });
+            });
+            grid.appendChild(card);
+        });
+
+        const porc = Math.round((numAp/total)*100) || 0;
+        document.getElementById('fillProgreso').style.width = porc + '%';
+        document.getElementById('txtProgreso').textContent = `Avance: ${porc}%`;
+        actualizarFrase(porc);
+    }
+
+    async function toggleMateria(n) {
+        if (aprobadas[n]) {
+            delete aprobadas[n];
+        } else {
+            aprobadas[n] = true;
+        }
+        await setDoc(doc(db, "usuarios", usuarioActual.uid), { materias: aprobadas });
+    }
+
+    document.getElementById('googleBtn').onclick = () => signInWithPopup(auth, provider);
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
+    document.getElementById('reiniciarBtn').onclick = async () => {
+        if(confirm("¿Segura que quieres borrar tu progreso? ✨"))
+            await setDoc(doc(db, "usuarios", usuarioActual.uid), { materias: {} });
+    };
+
+    document.getElementById('pdfBtn').onclick = () => {
+        const { jsPDF } = window.jspdf;
+        const docPDF = new jsPDF();
+        
+        docPDF.setFontSize(20);
+        docPDF.setTextColor(107, 142, 35);
+        docPDF.text("Mi Avance de Carrera - Arquitectura", 20, 20);
+        
+        const lista = [];
+        mallaData.forEach(anio => {
+            anio.semestres.forEach(sem => {
+                sem.materias.forEach(m => {
+                    const estado = aprobadas[m.nombre] ? "Aprobada" : "Pendiente";
+                    lista.push([anio.anio, sem.nombre, m.nombre, estado]);
+                });
+            });
+        });
+
+        docPDF.autoTable({
+            startY: 30,
+            head: [['Año', 'Semestre', 'Materia', 'Estado']],
+            body: lista,
+            headStyles: { fillColor: [163, 197, 133] }
+        });
+
+        docPDF.save("Mi_Malla_Arquitectura.pdf");
+    };
+</script>
+</body>
+</html>
 
 /* --------- Funciones principales --------- */
 function guardarProgreso(nombre, aprobado) {
