@@ -65,64 +65,65 @@
     background-color: #556b2f;
   }
 
-/* Malla */
-.malla {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  padding: 20px; /* asegura que no quede pegado al borde */
-  scroll-behavior: smooth; /* scroll suave */
-}
-
-.anio:first-child {
-  margin-left: 10px; /* asegura que el primer año no quede pegado al borde */
-}
-
+/* ---------- AÑOS ---------- */
 .anio {
-  min-width: 280px;
+  min-width: 220px; /* un poco más delgado para que quepan varias columnas */
   background-color: #e8f0e2;
   border-radius: 12px;
   padding: 15px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: center; /* centra todo dentro del año */
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* ligero sombreado */
 }
 
 .anio h2 {
   text-align: center;
   color: #556b2f;
   margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 1.1em;
+  border-bottom: 1px solid #a0b78e;
+  width: 80%;
+  padding-bottom: 5px;
 }
 
-/* ---------- CENTRAR SEMESTRES Y MATERIAS ---------- */
+/* ---------- SEMESTRES ---------- */
 .semestre {
   display: flex;
   flex-direction: column;
-  align-items: center; /* centra todo horizontalmente dentro del semestre */
+  align-items: center;
   background-color: #f0f6ed;
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 12px;
+  padding: 8px;
   margin-bottom: 15px;
-  width: 100%;
+  width: 90%;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
 }
 
 .semestre h3 {
   text-align: center;
-  font-size: 1.05em;
+  font-size: 1em;
   margin-bottom: 8px;
-  color: #556b2f;
+  font-weight: bold;
+  background-color: #d8e3c7;
+  padding: 4px 0;
+  border-radius: 8px;
+  width: 100%;
 }
 
+/* ---------- MATERIAS ---------- */
 .materia {
   background-color: #d8e3c7;
-  margin: 5px 0;
-  padding: 8px;
+  margin: 4px 0;
+  padding: 6px;
   border-radius: 8px;
   cursor: pointer;
   position: relative;
   transition: 0.2s;
-  text-align: center; /* centra el texto dentro de la materia */
+  text-align: center;
+  width: 95%;
 }
 
 .materia.aprobada {
@@ -137,7 +138,7 @@
   opacity: 0.7;
 }
 
-/* Tooltip */
+/* ---------- TOOLTIP ---------- */
 .materia[data-tooltip]:hover::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -165,13 +166,14 @@
   z-index: 10;
 }
 
-/* Scroll suave */
+/* ---------- MALLA (CONTENEDOR DE AÑOS) ---------- */
 .malla {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   padding: 20px;
-  scroll-behavior: smooth; /* scroll suave */
+  scroll-behavior: smooth;
+  justify-content: flex-start; /* todos los años alineados al inicio */
 }
 
 .malla::-webkit-scrollbar {
@@ -188,7 +190,7 @@
 }
 
 .anio:first-child {
-  margin-left: 10px; /* asegura que el primer año no quede pegado al borde */
+  margin-left: 10px;
 }
 </style>
 </head>
